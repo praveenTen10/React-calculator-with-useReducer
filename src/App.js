@@ -19,7 +19,11 @@ const initialState = {
 const reducer = (state, { type, payload }) => {
   switch (type) {
     case ACTIONS.ADD_DIGIT:
-      if (state.currentOperand === 0 && payload.value === 0) return state;
+      if (
+        (state.currentOperand === 0 || state.currentOperand === "") &&
+        (payload.value === 0 || payload.value === "00")
+      )
+        return state;
       if (
         payload.value === "." &&
         state.currentOperand &&
@@ -41,7 +45,7 @@ const reducer = (state, { type, payload }) => {
       if (state.currentOperand === null && state.previousOperand === null) {
         return state;
       }
-      if (state.previousOperand === "") {
+      if (!state.previousOperand) {
         return {
           ...state,
           operation: payload.value,
@@ -60,6 +64,19 @@ const reducer = (state, { type, payload }) => {
         previousOperand: calculate(state),
         operation: payload.value,
         currentOperand: null,
+      };
+    case ACTIONS.EVALUTE:
+      if (!state.previousOperand) return state;
+      return {
+        ...state,
+        previousOperand: null,
+        operation: null,
+        currentOperand: calculate(state),
+      };
+    case ACTIONS.DELETE_DIGIT:
+      return {
+        ...state,
+        currentOperand: state.currentOperand.slice(0, -1),
       };
     default:
       return "default";
@@ -83,6 +100,9 @@ const calculate = ({ currentOperand, previousOperand, operation }) => {
       break;
     case "/":
       compute = previous / current;
+      break;
+    case "%":
+      compute = previous % current;
       break;
     default:
   }
@@ -112,7 +132,7 @@ function App() {
     { buttonType: "digit", buttonValue: "00" },
     { buttonType: "digit", buttonValue: 0 },
     { buttonType: "digit", buttonValue: "." },
-    { buttonType: "operation", buttonValue: "=" },
+    { buttonType: "equals", buttonValue: "=" },
   ];
 
   return (

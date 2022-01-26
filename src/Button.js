@@ -34,14 +34,26 @@ const Button = ({ buttonType, dispatch, value }) => {
     case "delete":
       return (
         <button
-          onClick={() => dispatch({ type: ACTIONS.DELETE, payload: { value } })}
+          onClick={() =>
+            dispatch({ type: ACTIONS.DELETE_DIGIT, payload: { value } })
+          }
+        >
+          {value}
+        </button>
+      );
+    case "equals":
+      return (
+        <button
+          onClick={() =>
+            dispatch({ type: ACTIONS.EVALUTE, payload: { value } })
+          }
         >
           {value}
         </button>
       );
     default:
+      break;
   }
-  return;
 };
 
 export default react.memo(Button);
